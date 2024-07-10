@@ -8,7 +8,7 @@
     'author': "Alliantum",
     'website': "https://www.alliantum.com",
     'category': 'Technical',
-    'version': '15.0.1.0.0',
+    'version': '17.0.1.0.0',
     'depends': ['web'],
     'license': 'LGPL-3',
     "assets": {
