@@ -7,9 +7,7 @@
         <img alt="license" src="https://img.shields.io/badge/license-MIT-green" />
     </a>
     <img alt="python version" src="https://img.shields.io/badge/python-3.5 | 3.6 | 3.7 | 3.8 | 3.9 -blue" />
-    <a href="https://github.com/odoo/odoo/tree/12.0">
-        <img alt="latest release" src="https://img.shields.io/badge/Odoo%20Version-12-success" />
-    </a>
+    <img alt="odoo version" src="https://img.shields.io/badge/Odoo%20Version-19-success" />
   </p>
 </div>
 
@@ -25,9 +23,11 @@
 
 ## Table of Contents
 
+- [Table of Contents](#table-of-contents)
 - [Motivation](#motivation)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Migration from Odoo 17 to Odoo 19](#migration-from-odoo-17-to-odoo-19)
 - [License](#license)
 
 ## Motivation
@@ -40,9 +40,16 @@ Move this module to your addons folder. Then restart your Odoo server and, while
 
 ## Usage
 
-Once the module is installed. Add it to the `__manifest__.py` of the module where you want to use it. Then, in the xml add the `widget='month_year_format'`.
+Once the module is installed, add it to the `__manifest__.py` of the module where you want to use it. Then, in the xml add the `widget='month_year_format'` (or `widget='month_year_widget'`).
 
 ![xml widget example](https://github.com/JDavidMoreno/month_year_widget/blob/main/.github/images/code_example.png)
+
+## Migration from Odoo 17 to Odoo 19
+
+- Removed the legacy datepicker stack (jQuery + Tempus Dominus + moment).
+- Rebuilt the widget on OWL and the `datetime_picker` service (Luxon).
+- Forced month precision via `minPrecision/maxPrecision = "months"` and a month/year format derived from the user locale.
+- Assets are now loaded via `__manifest__.py` (`web.assets_backend`).
 
 ## License
 
