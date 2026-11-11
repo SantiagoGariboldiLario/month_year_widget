@@ -6,6 +6,7 @@ import { areDatesEqual, formatDate } from "@web/core/l10n/dates";
 import { localization } from "@web/core/l10n/localization";
 import { _t } from "@web/core/l10n/translation";
 import { registry } from "@web/core/registry";
+import { exprToBoolean } from "@web/core/utils/strings";
 import { FIELD_WIDTHS } from "@web/views/list/column_width_hook";
 import { dateField, DateTimeField } from "@web/views/fields/datetime/datetime_field";
 
@@ -175,11 +176,28 @@ const monthYearField = {
         (option) => !["min_precision", "max_precision"].includes(option.name)
     ),
     supportedTypes: ["date"],
-    extractProps: (params, dynamicInfo) => ({
-        ...dateField.extractProps(params, dynamicInfo),
-        minPrecision: "months",
-        maxPrecision: "months",
-    }),
+    extractProps: (params, dynamicInfo) => {
+        // CUSTOM: el widget original solo debia dar FORMATO mes/año al campo
+        // (mostrar "MM/yyyy"), sin impedir elegir un dia puntual en el
+        // selector — asi se comportaba en Odoo 17. Al portarlo a Odoo 19 se
+        // le agrego ademas minPrecision/maxPrecision="months", que bloquea
+        // de verdad bajar a dia en el picker. Varios wizards (Subdiario de
+        // IVA, Indice de inflacion) SI necesitan ese bloqueo real (son por
+        // periodo mensual), pero otros (ej. Libro Diario) necesitan elegir
+        // por dia como en v17. Se hace configurable por vista con
+        // options="{'restrict_to_month': false}"; por defecto sigue
+        // restringiendo (mismo comportamiento previo) para no romper los
+        // demas usos existentes.
+        const restrictToMonth = exprToBoolean(
+            params.options?.restrict_to_month ?? true
+        );
+        return {
+            ...dateField.extractProps(params, dynamicInfo),
+            ...(restrictToMonth
+                ? { minPrecision: "months", maxPrecision: "months" }
+                : {}),
+        };
+    },
     listViewWidth: () => FIELD_WIDTHS.date,
 };
 
